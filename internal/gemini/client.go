@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	// "os"
+	"os"
 
 )
 
@@ -31,8 +31,8 @@ type GeminiResponce struct {
 }
 
 func AskGemini(prompt string) (string, error) {
-	apikey := "AIzaSyDvqPYipnjb5jAozUqdmcboOrNqSKSZUWE"
-	// apikey := os.Getenv("GOOGLE_API_KEY")
+	
+	apikey := os.Getenv("GOOGLE_API_KEY")
 	if apikey == "" {
 		return "", fmt.Errorf("Gemini api is invalid")
 	}
