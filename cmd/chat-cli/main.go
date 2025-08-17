@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,42 +11,32 @@ import (
 )
 
 func main() {
-    // Load .env
-    godotenv.Load()
+	godotenv.Load()
+	reader := bufio.NewReader(os.Stdin)
 
-    reader := bufio.NewReader(os.Stdin)
-    memory := conversation.NewMemory()
+	memory := conversation.NewMemory()
 
-    fmt.Println("🤖 Gemini Chatbot CLI")
-    fmt.Println("Type 'exit' to quit.")
-    fmt.Println("----------------------------")
+	for {
+		fmt.Println("--------------------------Gemini-Go-Bot--------------------- ")
+		fmt.Println("Please write your message")
+		fmt.Print("You: ")
+		input, _ := reader.ReadString('\n')
+		input = input[:len(input)-1]
 
-    for {
-        fmt.Print("You: ")
-        input, _ := reader.ReadString('\n')
-        input = input[:len(input)-1] // remove newline
+		if input == "exit" {
+			fmt.Print("Bye Bye! ")
+			break
+		}
+		memory.Add("user", input)
 
-        if input == "exit" {
-            fmt.Println("Bye! 👋")
-            break
-        }
+		prompt := memory.BuildPrompt(input)
+		reply, err := gemini.AskGemini((prompt))
+		if err != nil {
+			panic(err)
+		}
 
-        // Add user input to memory
-        memory.Add("user", input)
+		memory.Add("Assistant", reply)
 
-        // Build prompt with history
-        prompt := memory.BuildPrompt(input)
-
-        // Ask Gemini
-        reply, err := gemini.AskGemini(prompt)
-        if err != nil {
-            log.Println("Error:", err)
-            continue
-        }
-
-        // Save AI response
-        memory.Add("assistant", reply)
-
-        fmt.Println("Bot:", reply)
-    }
+		fmt.Println("BOT:", reply)
+	}
 }
